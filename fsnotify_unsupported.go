@@ -20,6 +20,11 @@ func NewWatcher() (*Watcher, error) {
 	return nil, fmt.Errorf("fsnotify not supported on %s", runtime.GOOS)
 }
 
+// NewWatcher establishes a new watcher with the underlying OS and begins waiting for events.
+func NewWatcher() (*Watcher, error) {
+	return nil, errors.New("FEN based watcher not yet supported for fsnotify\n")
+}
+
 // Close removes all watches and closes the events channel.
 func (w *Watcher) Close() error {
 	return nil

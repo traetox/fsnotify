@@ -33,6 +33,14 @@ type Watcher struct {
 
 // NewWatcher establishes a new watcher with the underlying OS and begins waiting for events.
 func NewWatcher() (*Watcher, error) {
+	return NewBufferedWatcher(50)
+}
+
+// NewWatcher establishes a new watcher with the underlying OS and begins waiting for events with a buffered event channel
+func NewBufferedWatcher(n int) (*Watcher, error) {
+	if n < 0 {
+		return nil, errors.New("invalid buffer size")
+	}
 	port, e := syscall.CreateIoCompletionPort(syscall.InvalidHandle, 0, 0, 0)
 	if e != nil {
 		return nil, os.NewSyscallError("CreateIoCompletionPort", e)
@@ -41,7 +49,7 @@ func NewWatcher() (*Watcher, error) {
 		port:    port,
 		watches: make(watchMap),
 		input:   make(chan *input, 1),
-		Events:  make(chan Event, 50),
+		Events:  make(chan Event, n),
 		Errors:  make(chan error),
 		quit:    make(chan chan<- error, 1),
 	}

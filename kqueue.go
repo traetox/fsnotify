@@ -43,6 +43,14 @@ type pathInfo struct {
 
 // NewWatcher establishes a new watcher with the underlying OS and begins waiting for events.
 func NewWatcher() (*Watcher, error) {
+	return NewBufferedWatcher(0)
+}
+
+// NewWatcher establishes a new watcher with the underlying OS and begins waiting for events with a buffered event channel
+func NewBufferedWatcher(n int) (*Watcher, error) {
+	if n < 0 {
+		return nil, errors.New("invalid buffer size")
+	}
 	kq, err := kqueue()
 	if err != nil {
 		return nil, err
@@ -55,7 +63,7 @@ func NewWatcher() (*Watcher, error) {
 		paths:           make(map[int]pathInfo),
 		fileExists:      make(map[string]bool),
 		externalWatches: make(map[string]bool),
-		Events:          make(chan Event),
+		Events:          make(chan Event, n),
 		Errors:          make(chan error),
 		done:            make(chan struct{}),
 	}

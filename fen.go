@@ -22,6 +22,11 @@ func NewWatcher() (*Watcher, error) {
 	return nil, errors.New("FEN based watcher not yet supported for fsnotify\n")
 }
 
+// NewBufferedWatcher establishes a new watcher with the underlying OS and begins waiting for events with a buffered event channel
+func NewBufferedWatcher(n int) (*Watcher, error) {
+	return NewWatcher()
+}
+
 // Close removes all watches and closes the events channel.
 func (w *Watcher) Close() error {
 	return nil
